@@ -9,7 +9,7 @@ import java.util.List;
 public class CourtDaoImpl extends AbstractDao<CourtEntity> implements CourtDao {
 
     public CourtDaoImpl() {
-        setClazz(CourtEntity.class);
+        super(CourtEntity.class);
     }
 
     @Override

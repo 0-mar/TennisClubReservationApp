@@ -2,6 +2,7 @@ package cz.omar.tennisclubreservationapp.common.storage;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -9,10 +10,11 @@ public class AbstractDao<T extends BaseEntity> {
     @PersistenceContext
     protected EntityManager entityManager;
 
-    private Class<T> clazz;
+    @Getter
+    private final Class<T> clazz;
 
-    protected final void setClazz(final Class<T> clazzToSet) {
-        clazz = clazzToSet;
+    public AbstractDao(Class<T> clazz) {
+        this.clazz = clazz;
     }
 
     protected T save(T entity) {

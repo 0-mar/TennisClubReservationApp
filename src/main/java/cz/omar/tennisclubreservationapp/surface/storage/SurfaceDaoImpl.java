@@ -5,11 +5,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
+@Transactional // TODO: solve (probably shouldnt be here)
 public class SurfaceDaoImpl extends AbstractDao<SurfaceEntity> implements SurfaceDao {
 
     public SurfaceDaoImpl() {
-        setClazz(SurfaceEntity.class);
+        super(SurfaceEntity.class);
     }
 
     @Override
