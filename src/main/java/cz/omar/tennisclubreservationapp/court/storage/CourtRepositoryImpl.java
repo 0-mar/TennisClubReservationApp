@@ -36,7 +36,12 @@ public class CourtRepositoryImpl implements CourtRepository {
 
     @Override
     public Court get(Long id) {
-        return courtMapper.entityToCourt(courtDao.get(id));
+        CourtEntity courtEntity = courtDao.get(id);
+        if (courtEntity == null) {
+            throw new RepositoryException("Court " + id + " not found");
+        }
+
+        return courtMapper.entityToCourt(courtEntity);
     }
 
     @Override
@@ -49,7 +54,11 @@ public class CourtRepositoryImpl implements CourtRepository {
 
     @Override
     public Court delete(Long id) {
-        return courtMapper.entityToCourt(courtDao.delete(id));
+        CourtEntity deletedCourt = courtDao.delete(id);
+        if (deletedCourt == null) {
+            throw new RepositoryException("Court " + id + " not found");
+        }
+        return courtMapper.entityToCourt(deletedCourt);
     }
 
     @Override
