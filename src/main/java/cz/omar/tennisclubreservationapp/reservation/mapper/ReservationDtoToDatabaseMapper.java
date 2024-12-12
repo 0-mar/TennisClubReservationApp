@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReservationDtoToDatabaseMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", constant = "false")
     @Mapping(source = "reservationCreateDto.from", target = "from")
     @Mapping(source = "reservationCreateDto.doubles", target = "doubles")
     @Mapping(source = "reservationCreateDto.to", target = "to")

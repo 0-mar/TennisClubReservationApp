@@ -18,6 +18,7 @@ public interface ReservationToDatabaseMapper {
     Reservation entityToReservation(ReservationEntity reservationEntity);
 
     @Mapping(source = "id", target = "id")
+    @Mapping(target = "deleted", constant = "false")
     @Mapping(source = "from", target = "from")
     @Mapping(source = "doubles", target = "doubles")
     @Mapping(source = "to", target = "to")
