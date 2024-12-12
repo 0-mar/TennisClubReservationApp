@@ -1,5 +1,6 @@
 package cz.omar.tennisclubreservationapp.reservation.storage;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationDao {
@@ -10,5 +11,6 @@ public interface ReservationDao {
     ReservationEntity update(ReservationEntity reservationEntity);
     List<ReservationEntity> getReservationsByCourt(Long courtId);
     List<ReservationEntity> getReservationsByPhoneNumber(String phoneNumber, boolean onlyFuture);
+    boolean intervalOverlaps(LocalDateTime from, LocalDateTime to);
 
 }

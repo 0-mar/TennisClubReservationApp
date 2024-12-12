@@ -51,7 +51,7 @@ public class ReservationDaoImpl extends AbstractDao<ReservationEntity> implement
         StringBuilder queryString = new StringBuilder("SELECT r FROM " + getClazz().getSimpleName() + " r WHERE r.customerEntity.phoneNumber = :phoneNumber AND r.deleted = false");
 
         if (onlyFuture) {
-            queryString.append(" AND r.from > :now");
+            queryString.append(" AND r.from >= :now");
         }
 
         queryString.append(" ORDER BY r.from ASC");
@@ -64,5 +64,19 @@ public class ReservationDaoImpl extends AbstractDao<ReservationEntity> implement
         }
 
         return query.getResultList();
+    }
+
+    @Override
+    public boolean intervalOverlaps(LocalDateTime from, LocalDateTime to) {
+        String queryString = "SELECT COUNT(r) FROM ReservationEntity r " +
+                "WHERE r.deleted = false " +
+                "AND ((r.from <= :from AND :from < r.to) OR (r.from < :to AND :to < r.to) OR (:from <= r.from AND r.from < :to) OR (:from < r.to AND r.to < :to))";
+
+        Long count = entityManager.createQuery(queryString, Long.class)
+                .setParameter("from", from)
+                .setParameter("to", to)
+                .getSingleResult();
+
+        return count > 0;
     }
 }
