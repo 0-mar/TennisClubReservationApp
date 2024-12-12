@@ -3,7 +3,6 @@ package cz.omar.tennisclubreservationapp.reservation.storage;
 import cz.omar.tennisclubreservationapp.common.storage.BaseEntity;
 import cz.omar.tennisclubreservationapp.court.storage.CourtEntity;
 import cz.omar.tennisclubreservationapp.customer.storage.CustomerEntity;
-import cz.omar.tennisclubreservationapp.surface.storage.SurfaceEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
