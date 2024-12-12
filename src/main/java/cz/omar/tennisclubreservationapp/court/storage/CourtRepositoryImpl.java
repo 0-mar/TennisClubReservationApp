@@ -14,23 +14,17 @@ import java.util.stream.Collectors;
 @Transactional
 public class CourtRepositoryImpl implements CourtRepository {
     private final CourtDao courtDao;
-    private final SurfaceDao surfaceDao;
 
     private final CourtToDatabaseMapper courtMapper;
 
-    public CourtRepositoryImpl(CourtDao courtDao, SurfaceDao surfaceDao, CourtToDatabaseMapper courtMapper) {
+    public CourtRepositoryImpl(CourtDao courtDao, CourtToDatabaseMapper courtMapper) {
         this.courtDao = courtDao;
-        this.surfaceDao = surfaceDao;
         this.courtMapper = courtMapper;
     }
 
 
     @Override
     public Court create(CourtEntity courtEntity) {
-        if (surfaceDao.get(courtEntity.getSurfaceEntity().getId()) == null) {
-            throw new RepositoryException("Surface entity " + courtEntity.getSurfaceEntity() + " not found");
-        }
-
         return courtMapper.entityToCourt(courtDao.create(courtEntity));
     }
 
