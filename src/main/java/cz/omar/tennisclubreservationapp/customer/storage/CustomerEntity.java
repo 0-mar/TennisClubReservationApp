@@ -16,7 +16,7 @@ public class CustomerEntity extends BaseEntity {
     @Column(name = "lastName", nullable = false)
     private String lastName;
 
-    @Column(name = "phoneNumber", nullable = false)
+    @Column(name = "phoneNumber", unique = true, nullable = false)
     private String phoneNumber;
 
     @Column(name = "deleted", nullable = false)
