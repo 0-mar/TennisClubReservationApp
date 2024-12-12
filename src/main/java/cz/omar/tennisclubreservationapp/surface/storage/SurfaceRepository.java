@@ -1,5 +1,6 @@
 package cz.omar.tennisclubreservationapp.surface.storage;
 
+import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.surface.business.Surface;
 import cz.omar.tennisclubreservationapp.surface.mappers.SurfaceToDatabaseMapper;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,10 @@ public class SurfaceRepository {
     }
 
     public Surface get(Long id) {
+        SurfaceEntity surfaceEntity = surfaceDao.get(id);
+        if (surfaceEntity == null) {
+            throw new RepositoryException("Surface entity " + id + " not found");
+        }
         return surfaceToDatabaseMapper.entityToSurface(surfaceDao.get(id));
     }
 }
