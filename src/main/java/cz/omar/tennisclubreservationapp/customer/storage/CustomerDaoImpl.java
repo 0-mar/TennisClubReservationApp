@@ -32,4 +32,14 @@ public class CustomerDaoImpl extends AbstractDao<CustomerEntity> implements Cust
         return remove(id);
     }
 
+    @Override
+    public CustomerEntity getByPhoneNumber(String phoneNumber) {
+        return entityManager.createQuery(
+                        "SELECT c FROM " + getClazz().getSimpleName() + " c WHERE c.phoneNumber = :phoneNumber AND c.deleted = false", getClazz())
+                .setParameter("phoneNumber", phoneNumber)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+    }
+
 }

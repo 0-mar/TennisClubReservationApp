@@ -7,4 +7,5 @@ public interface CustomerDao {
     CustomerEntity get(Long id);
     List<CustomerEntity> getAll();
     CustomerEntity delete(Long id);
+    CustomerEntity getByPhoneNumber(String phoneNumber);
 }
