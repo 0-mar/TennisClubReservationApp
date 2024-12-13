@@ -2,10 +2,10 @@ package cz.omar.tennisclubreservationapp.surface.storage;
 
 import cz.omar.tennisclubreservationapp.common.storage.AbstractDao;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
-@Transactional // TODO: solve (probably shouldnt be here)
 public class SurfaceDaoImpl extends AbstractDao<SurfaceEntity> implements SurfaceDao {
 
     public SurfaceDaoImpl() {
@@ -20,5 +20,10 @@ public class SurfaceDaoImpl extends AbstractDao<SurfaceEntity> implements Surfac
     @Override
     public SurfaceEntity get(Long id) {
         return findById(id);
+    }
+
+    @Override
+    public List<SurfaceEntity> getAll() {
+        return findAll();
     }
 }
