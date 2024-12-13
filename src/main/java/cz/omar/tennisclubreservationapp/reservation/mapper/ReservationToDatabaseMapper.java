@@ -10,18 +10,18 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {CustomerToDatabaseMapper.class, CourtToDatabaseMapper.class})
 public interface ReservationToDatabaseMapper {
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "from", target = "from")
+    @Mapping(source = "startTime", target = "startTime")
     @Mapping(source = "doubles", target = "doubles")
-    @Mapping(source = "to", target = "to")
+    @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "customerEntity", target = "customer")
     @Mapping(source = "courtEntity", target = "court")
     Reservation entityToReservation(ReservationEntity reservationEntity);
 
     @Mapping(source = "id", target = "id")
     @Mapping(target = "deleted", constant = "false")
-    @Mapping(source = "from", target = "from")
+    @Mapping(source = "startTime", target = "startTime")
     @Mapping(source = "doubles", target = "doubles")
-    @Mapping(source = "to", target = "to")
+    @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "customer", target = "customerEntity")
     @Mapping(source = "court", target = "courtEntity")
     ReservationEntity reservationToEntity(Reservation reservation);

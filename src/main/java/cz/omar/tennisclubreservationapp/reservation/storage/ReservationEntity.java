@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ReservationEntity extends BaseEntity {
-    @Column(name = "from", nullable = false)
-    private LocalDateTime from;
+    @Column(name = "startTime", nullable = false)
+    private LocalDateTime startTime;
 
-    @Column(name = "to", nullable = false)
-    private LocalDateTime to;
+    @Column(name = "endTime", nullable = false)
+    private LocalDateTime endTime;
 
     @Column(name = "doubles", nullable = false)
     private boolean doubles;

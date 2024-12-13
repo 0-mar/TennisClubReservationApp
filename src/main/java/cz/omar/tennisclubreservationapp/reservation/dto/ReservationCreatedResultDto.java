@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReservationCreatedResultDto {
     private String phoneNumber;
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private float price;
 }

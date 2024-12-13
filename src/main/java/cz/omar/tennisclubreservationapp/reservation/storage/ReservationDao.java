@@ -11,6 +11,6 @@ public interface ReservationDao {
     ReservationEntity update(ReservationEntity reservationEntity);
     List<ReservationEntity> getReservationsByCourt(Long courtId);
     List<ReservationEntity> getReservationsByPhoneNumber(String phoneNumber, boolean onlyFuture);
-    boolean intervalOverlaps(LocalDateTime from, LocalDateTime to);
+    boolean intervalOverlaps(LocalDateTime startTime, LocalDateTime endTime);
 
 }

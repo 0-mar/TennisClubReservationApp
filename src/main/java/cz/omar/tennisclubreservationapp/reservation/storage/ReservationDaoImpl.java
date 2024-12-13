@@ -41,7 +41,7 @@ public class ReservationDaoImpl extends AbstractDao<ReservationEntity> implement
     @Override
     public List<ReservationEntity> getReservationsByCourt(Long courtId) {
         return entityManager.createQuery(
-                "SELECT r FROM " + getClazz().getSimpleName() + " r WHERE r.courtEntity.id = :courtId AND r.deleted = false ORDER BY r.from ASC", getClazz())
+                "SELECT r FROM " + getClazz().getSimpleName() + " r WHERE r.courtEntity.id = :courtId AND r.deleted = false ORDER BY r.startTime ASC", getClazz())
                 .setParameter("courtId", courtId)
                 .getResultList();
     }
@@ -51,10 +51,10 @@ public class ReservationDaoImpl extends AbstractDao<ReservationEntity> implement
         StringBuilder queryString = new StringBuilder("SELECT r FROM " + getClazz().getSimpleName() + " r WHERE r.customerEntity.phoneNumber = :phoneNumber AND r.deleted = false");
 
         if (onlyFuture) {
-            queryString.append(" AND r.from >= :now");
+            queryString.append(" AND r.startTime >= :now");
         }
 
-        queryString.append(" ORDER BY r.from ASC");
+        queryString.append(" ORDER BY r.startTime ASC");
 
         var query = entityManager.createQuery(queryString.toString(), getClazz())
                 .setParameter("phoneNumber", phoneNumber);
@@ -67,14 +67,14 @@ public class ReservationDaoImpl extends AbstractDao<ReservationEntity> implement
     }
 
     @Override
-    public boolean intervalOverlaps(LocalDateTime from, LocalDateTime to) {
+    public boolean intervalOverlaps(LocalDateTime startTime, LocalDateTime endTime) {
         String queryString = "SELECT COUNT(r) FROM ReservationEntity r " +
                 "WHERE r.deleted = false " +
-                "AND ((r.from <= :from AND :from < r.to) OR (r.from < :to AND :to < r.to) OR (:from <= r.from AND r.from < :to) OR (:from < r.to AND r.to < :to))";
+                "AND ((r.startTime <= :startTime AND :startTime < r.endTime) OR (r.startTime < :endTime AND :endTime < r.endTime) OR (:startTime <= r.startTime AND r.startTime < :endTime) OR (:startTime < r.endTime AND r.endTime < :endTime))";
 
         Long count = entityManager.createQuery(queryString, Long.class)
-                .setParameter("from", from)
-                .setParameter("to", to)
+                .setParameter("startTime", startTime)
+                .setParameter("endTime", endTime)
                 .getSingleResult();
 
         return count > 0;

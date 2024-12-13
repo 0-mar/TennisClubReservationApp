@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Data
 public class Reservation {
     private Long id;
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private boolean doubles;
     private Court court;
     private Customer customer;

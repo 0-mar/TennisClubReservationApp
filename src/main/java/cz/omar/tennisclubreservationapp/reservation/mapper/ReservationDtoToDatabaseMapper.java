@@ -11,9 +11,9 @@ import org.mapstruct.Mapping;
 public interface ReservationDtoToDatabaseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "deleted", constant = "false")
-    @Mapping(source = "reservationCreateDto.from", target = "from")
+    @Mapping(source = "reservationCreateDto.startTime", target = "startTime")
     @Mapping(source = "reservationCreateDto.doubles", target = "doubles")
-    @Mapping(source = "reservationCreateDto.to", target = "to")
+    @Mapping(source = "reservationCreateDto.endTime", target = "endTime")
     @Mapping(source = "customerEntity", target = "customerEntity")
     @Mapping(source = "courtEntity", target = "courtEntity")
     ReservationEntity createDtoToEntity(ReservationCreateDto reservationCreateDto, CustomerEntity customerEntity, CourtEntity courtEntity);

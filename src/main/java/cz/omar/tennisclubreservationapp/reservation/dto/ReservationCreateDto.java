@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class ReservationCreateDto {
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private boolean doubles;
     private Long courtId;
     private String firstName;
