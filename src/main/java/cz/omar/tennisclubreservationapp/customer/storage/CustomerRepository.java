@@ -4,10 +4,8 @@ import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.customer.business.Customer;
 import cz.omar.tennisclubreservationapp.customer.mapper.CustomerToDatabaseMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
 public class CustomerRepository {
     private final CustomerDao customerDao;
     private final CustomerToDatabaseMapper customerToDatabaseMapper;

@@ -4,13 +4,11 @@ import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.reservation.business.Reservation;
 import cz.omar.tennisclubreservationapp.reservation.mapper.ReservationToDatabaseMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-@Transactional
 public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final ReservationDao reservationDao;
@@ -23,7 +21,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public Reservation create(ReservationEntity reservationEntity) {
-        if (reservationDao.intervalOverlaps(reservationEntity.getFrom(), reservationEntity.getTo())) {
+        if (reservationDao.intervalOverlaps(reservationEntity.getStartTime(), reservationEntity.getEndTime())) {
             throw new RepositoryException("Time slot already reserved");
         }
         return reservationToDatabaseMapper.entityToReservation(reservationDao.create(reservationEntity));

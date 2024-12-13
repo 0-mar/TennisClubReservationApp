@@ -4,10 +4,11 @@ import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.surface.business.Surface;
 import cz.omar.tennisclubreservationapp.surface.mappers.SurfaceToDatabaseMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
-@Transactional
 public class SurfaceRepository {
     private final SurfaceDao surfaceDao;
     private final SurfaceToDatabaseMapper surfaceToDatabaseMapper;
@@ -27,5 +28,11 @@ public class SurfaceRepository {
             throw new RepositoryException("Surface entity " + id + " not found");
         }
         return surfaceToDatabaseMapper.entityToSurface(surfaceDao.get(id));
+    }
+
+    public List<Surface> getAll() {
+        return surfaceDao.getAll().stream()
+                .map(surfaceToDatabaseMapper::entityToSurface)
+                .collect(Collectors.toList());
     }
 }

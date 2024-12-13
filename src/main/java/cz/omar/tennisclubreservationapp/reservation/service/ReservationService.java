@@ -17,12 +17,14 @@ import cz.omar.tennisclubreservationapp.reservation.mapper.ReservationToDtoMappe
 import cz.omar.tennisclubreservationapp.reservation.storage.ReservationEntity;
 import cz.omar.tennisclubreservationapp.reservation.storage.ReservationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final CustomerRepository customerRepository;
@@ -69,14 +71,14 @@ public class ReservationService {
                 courtToDatabaseMapper.courtToEntity(associatedCourt));
 
         Reservation reservation = reservationRepository.create(reservationEntity);
-        Duration duration = Duration.between(reservation.getFrom(), reservation.getTo());
+        Duration duration = Duration.between(reservation.getStartTime(), reservation.getEndTime());
 
         float price = duration.toMinutes() * reservation.getCourt().getSurface().getRentPerMinute();
         if (reservation.isDoubles()) {
             price *= 1.5f;
         }
 
-        return new ReservationCreatedResultDto(associatedCustomer.getPhoneNumber(), reservation.getFrom(), reservation.getTo(), price);
+        return new ReservationCreatedResultDto(associatedCustomer.getPhoneNumber(), reservation.getStartTime(), reservation.getEndTime(), price);
     }
 
     public ReservationDto get(Long id) {

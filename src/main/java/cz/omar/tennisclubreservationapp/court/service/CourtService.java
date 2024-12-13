@@ -12,11 +12,13 @@ import cz.omar.tennisclubreservationapp.surface.business.Surface;
 import cz.omar.tennisclubreservationapp.surface.mappers.SurfaceToDatabaseMapper;
 import cz.omar.tennisclubreservationapp.surface.storage.SurfaceRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CourtService {
     private final CourtRepository courtRepository;
     private final SurfaceRepository surfaceRepository;

@@ -3,15 +3,12 @@ package cz.omar.tennisclubreservationapp.court.storage;
 import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.court.business.Court;
 import cz.omar.tennisclubreservationapp.court.mappers.CourtToDatabaseMapper;
-import cz.omar.tennisclubreservationapp.surface.storage.SurfaceDao;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-@Transactional
 public class CourtRepositoryImpl implements CourtRepository {
     private final CourtDao courtDao;
 
