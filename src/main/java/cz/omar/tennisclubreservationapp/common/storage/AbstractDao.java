@@ -1,6 +1,7 @@
 package cz.omar.tennisclubreservationapp.common.storage;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceContext;
 import lombok.Getter;
 
@@ -44,14 +45,15 @@ public class AbstractDao<T extends BaseEntity> {
         }
 
         entity.setDeleted(true);
-        entityManager.merge(entity);
 
-        return entity;
+        return entityManager.merge(entity);
     }
 
     protected T merge(T entity) {
-        entityManager.merge(entity);
-
-        return entity;
+        try {
+            return entityManager.merge(entity);
+        } catch (OptimisticLockException ex) {
+            return null;
+        }
     }
 }
