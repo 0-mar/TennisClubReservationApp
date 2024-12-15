@@ -18,7 +18,6 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public Customer create(CustomerEntity customerEntity) {
         if (customerDao.getByPhoneNumber(customerEntity.getPhoneNumber()) != null) {
-            // TODO: change repository error
             throw new RepositoryException("Phone number already in use");
         }
 
