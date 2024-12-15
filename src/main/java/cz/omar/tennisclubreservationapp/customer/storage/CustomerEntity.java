@@ -2,12 +2,16 @@ package cz.omar.tennisclubreservationapp.customer.storage;
 
 import cz.omar.tennisclubreservationapp.common.storage.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomerEntity extends BaseEntity {
 
     @Column(name = "firstName", nullable = false)
