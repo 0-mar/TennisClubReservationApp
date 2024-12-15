@@ -104,8 +104,8 @@ public class CustomerDaoTest {
         customer3.setFirstName("Pepa");
         customer3.setLastName("Novak");
 
-        CustomerEntity savedCustomer1 = entityManager.persist(customer1);
-        CustomerEntity savedCustomer2 = entityManager.persist(customer2);
+        entityManager.persist(customer1);
+        entityManager.persist(customer2);
         CustomerEntity savedCustomer3 = entityManager.persist(customer3);
 
         var foundCustomer = customerDao.getByPhoneNumber(savedCustomer3.getPhoneNumber());

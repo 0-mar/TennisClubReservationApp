@@ -27,7 +27,7 @@ public class Seeder {
     private final SurfaceToDatabaseMapper surfaceToDatabaseMapper;
 
     public Seeder(SurfaceRepository surfaceRepository, CourtRepository courtRepository,
-                  SurfaceToDatabaseMapper surfaceToDatabaseMapper, PlatformTransactionManager transactionManager) {
+                  SurfaceToDatabaseMapper surfaceToDatabaseMapper) {
         this.surfaceRepository = surfaceRepository;
         this.courtRepository = courtRepository;
         this.surfaceToDatabaseMapper = surfaceToDatabaseMapper;
