@@ -24,6 +24,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         if (reservationDao.intervalOverlaps(reservationEntity.getStartTime(), reservationEntity.getEndTime())) {
             throw new RepositoryException("Time slot already reserved");
         }
+
+        if (reservationEntity.getStartTime().getHour() < 6) {
+            throw new RepositoryException("Reservations before 6 are not allowed");
+        }
+
+        if (reservationEntity.getEndTime().getHour() == 22 && reservationEntity.getEndTime().getMinute() > 0) {
+            throw new RepositoryException("Reservations after 22 are not allowed");
+        }
+
+        if ((reservationEntity.getStartTime().getYear() != reservationEntity.getEndTime().getYear()) &&
+                (reservationEntity.getStartTime().getDayOfYear() != reservationEntity.getEndTime().getDayOfYear())) {
+            throw new RepositoryException("Reservations can be only made within the same day");
+        }
+
         return reservationToDatabaseMapper.entityToReservation(reservationDao.create(reservationEntity));
     }
 
