@@ -54,6 +54,10 @@ public class CourtRepositoryImpl implements CourtRepository {
 
     @Override
     public Court update(Court court) {
-        return courtMapper.entityToCourt(courtDao.update(courtMapper.courtToEntity(court)));
+        CourtEntity updatedCourt = courtDao.update(courtMapper.courtToEntity(court));
+        if (updatedCourt == null) {
+            throw new RepositoryException("Court " + court.getId() + " not found");
+        }
+        return courtMapper.entityToCourt(updatedCourt);
     }
 }
