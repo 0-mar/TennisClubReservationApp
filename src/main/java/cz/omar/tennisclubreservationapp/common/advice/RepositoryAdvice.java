@@ -11,6 +11,6 @@ public class RepositoryAdvice {
     @ExceptionHandler(RepositoryException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     String repositoryHandler(RepositoryException ex) {
-        return "Could not fetch the data";
+        return ex.getMessage();
     }
 }
