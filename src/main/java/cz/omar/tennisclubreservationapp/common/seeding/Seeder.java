@@ -1,4 +1,4 @@
-package cz.omar.tennisclubreservationapp.seeding;
+package cz.omar.tennisclubreservationapp.common.seeding;
 
 import cz.omar.tennisclubreservationapp.court.storage.CourtEntity;
 import cz.omar.tennisclubreservationapp.court.storage.CourtRepository;
