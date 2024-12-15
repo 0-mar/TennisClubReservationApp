@@ -5,35 +5,11 @@ import cz.omar.tennisclubreservationapp.customer.business.Customer;
 import cz.omar.tennisclubreservationapp.customer.mapper.CustomerToDatabaseMapper;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public class CustomerRepository {
-    private final CustomerDao customerDao;
-    private final CustomerToDatabaseMapper customerToDatabaseMapper;
+public interface CustomerRepository {
 
-    public CustomerRepository(CustomerDao customerDao, CustomerToDatabaseMapper customerToDatabaseMapper) {
-        this.customerDao = customerDao;
-        this.customerToDatabaseMapper = customerToDatabaseMapper;
-    }
+    Customer create(CustomerEntity customerEntity);
 
-    public Customer create(CustomerEntity customerEntity) {
-        if (customerDao.getByPhoneNumber(customerEntity.getPhoneNumber()) != null) {
-            // TODO: change repository error
-            throw new RepositoryException("Phone number already in use");
-        }
+    Customer get(Long id);
 
-        return customerToDatabaseMapper.entityToCustomer(customerDao.create(customerEntity));
-    }
-
-    public Customer get(Long id) {
-        CustomerEntity customerEntity = customerDao.get(id);
-        if (customerEntity == null) {
-            throw new RepositoryException("Customer " + id + " not found");
-        }
-        return customerToDatabaseMapper.entityToCustomer(customerEntity);
-    }
-
-    public Customer getByPhoneNumber(String phoneNumber) {
-        CustomerEntity customerEntity = customerDao.getByPhoneNumber(phoneNumber);
-        return customerToDatabaseMapper.entityToCustomer(customerEntity);
-    }
+    Customer getByPhoneNumber(String phoneNumber);
 }
