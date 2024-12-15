@@ -17,7 +17,7 @@ public class CourtController {
         this.courtService = courtService;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public CourtDto createCourt(@Valid @RequestBody CourtCreateDto courtCreateDto) {
         return courtService.create(courtCreateDto);
     }
@@ -27,7 +27,7 @@ public class CourtController {
         return courtService.get(courtId);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<CourtDto> getAllCourts() {
         return courtService.getAll();
     }
