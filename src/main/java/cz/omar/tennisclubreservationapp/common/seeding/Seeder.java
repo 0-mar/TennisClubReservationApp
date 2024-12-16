@@ -1,11 +1,14 @@
 package cz.omar.tennisclubreservationapp.common.seeding;
 
+import cz.omar.tennisclubreservationapp.auth.AuthenticationService;
+import cz.omar.tennisclubreservationapp.auth.dto.RegisterDto;
 import cz.omar.tennisclubreservationapp.court.storage.CourtEntity;
 import cz.omar.tennisclubreservationapp.court.storage.CourtRepository;
 import cz.omar.tennisclubreservationapp.surface.business.Surface;
 import cz.omar.tennisclubreservationapp.surface.mappers.SurfaceToDatabaseMapper;
 import cz.omar.tennisclubreservationapp.surface.storage.SurfaceEntity;
 import cz.omar.tennisclubreservationapp.surface.storage.SurfaceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static cz.omar.tennisclubreservationapp.user.storage.Role.ADMIN;
+import static cz.omar.tennisclubreservationapp.user.storage.Role.USER;
+
+@RequiredArgsConstructor
 @Component
 public class Seeder {
 
@@ -24,13 +31,8 @@ public class Seeder {
     private final SurfaceRepository surfaceRepository;
     private final CourtRepository courtRepository;
     private final SurfaceToDatabaseMapper surfaceToDatabaseMapper;
+    private final AuthenticationService service;
 
-    public Seeder(SurfaceRepository surfaceRepository, CourtRepository courtRepository,
-                  SurfaceToDatabaseMapper surfaceToDatabaseMapper) {
-        this.surfaceRepository = surfaceRepository;
-        this.courtRepository = courtRepository;
-        this.surfaceToDatabaseMapper = surfaceToDatabaseMapper;
-    }
 
     @Bean
     public ApplicationRunner initializeData() {
@@ -42,6 +44,7 @@ public class Seeder {
                     System.out.println("Seeding data...");
                     initializeSurfaceEntities();
                     initializeCourtEntities();
+                    initializeUsers();
                     System.out.println("Seeding was successful!");
                 }
             }
@@ -84,5 +87,23 @@ public class Seeder {
         courtRepository.create(court2);
         courtRepository.create(court3);
         courtRepository.create(court4);
+    }
+
+    private void initializeUsers() {
+        var admin = RegisterDto.builder()
+                .email("admin@mail.com")
+                .password("password")
+                .role(ADMIN)
+                .build();
+        var adminData = service.register(admin);
+        System.out.println("Admin token: " + adminData.getAccessToken());
+        System.out.println("Admin refresh token: " + adminData.getRefreshToken());
+
+        var manager = RegisterDto.builder()
+                .email("user@mail.com")
+                .password("password")
+                .role(USER)
+                .build();
+        System.out.println("User token: " + service.register(manager).getAccessToken());
     }
 }
