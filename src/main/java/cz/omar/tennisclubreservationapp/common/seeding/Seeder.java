@@ -99,11 +99,14 @@ public class Seeder {
         System.out.println("Admin token: " + adminData.getAccessToken());
         System.out.println("Admin refresh token: " + adminData.getRefreshToken());
 
-        var manager = RegisterDto.builder()
+        var user = RegisterDto.builder()
                 .email("user@mail.com")
                 .password("password")
                 .role(USER)
                 .build();
-        System.out.println("User token: " + service.register(manager).getAccessToken());
+
+        var userData = service.register(user);
+        System.out.println("User token: " + userData.getAccessToken());
+        System.out.println("User refresh token: " + userData.getRefreshToken());
     }
 }
