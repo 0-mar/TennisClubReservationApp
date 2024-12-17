@@ -5,6 +5,8 @@ import java.util.List;
 public interface TokenDao {
     TokenEntity create(TokenEntity entity);
     TokenEntity update(TokenEntity entity);
-    List<TokenEntity> getAllValidTokenByUser(Long id);
+    TokenEntity delete(Long id);
+    List<TokenEntity> getAllTokensByUser(Long id);
     TokenEntity getByToken(String token);
+    List<TokenEntity> getAllTokensByUser(Long id, TokenType type);
 }

@@ -22,9 +22,14 @@ public class TokenDaoImpl extends AbstractDao<TokenEntity> implements TokenDao {
     }
 
     @Override
-    public List<TokenEntity> getAllValidTokenByUser(Long userId) {
+    public TokenEntity delete(Long id) {
+        return remove(id);
+    }
+
+    @Override
+    public List<TokenEntity> getAllTokensByUser(Long userId) {
         return entityManager.createQuery(
-                        "SELECT t FROM " + getClazz().getSimpleName() + " t WHERE t.userEntity.id = :userId AND (t.expired = false OR t.revoked = false) AND t.deleted = false", getClazz())
+                        "SELECT t FROM " + getClazz().getSimpleName() + " t WHERE t.userEntity.id = :userId AND t.deleted = false", getClazz())
                 .setParameter("userId", userId)
                 .getResultList();
     }
@@ -36,5 +41,14 @@ public class TokenDaoImpl extends AbstractDao<TokenEntity> implements TokenDao {
                 .getResultStream()
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public List<TokenEntity> getAllTokensByUser(Long userId, TokenType type) {
+        return entityManager.createQuery(
+                        "SELECT t FROM " + getClazz().getSimpleName() + " t WHERE t.userEntity.id = :userId AND t.type = :type AND t.deleted = false", getClazz())
+                .setParameter("userId", userId)
+                .setParameter("type", type)
+                .getResultList();
     }
 }
