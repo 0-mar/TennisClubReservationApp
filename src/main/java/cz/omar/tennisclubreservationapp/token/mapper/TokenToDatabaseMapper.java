@@ -10,15 +10,14 @@ import org.mapstruct.Mapping;
 public interface TokenToDatabaseMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "token", target = "token")
-    @Mapping(source = "revoked", target = "revoked")
-    @Mapping(source = "expired", target = "expired")
     @Mapping(source = "userEntity", target = "user")
+    @Mapping(source = "type", target = "type")
     Token entityToToken(TokenEntity tokenEntity);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "token", target = "token")
-    @Mapping(source = "revoked", target = "revoked")
-    @Mapping(source = "expired", target = "expired")
     @Mapping(source = "user", target = "userEntity")
+    @Mapping(source = "type", target = "type")
+    @Mapping(constant = "false", target = "deleted")
     TokenEntity tokenToEntity(Token token);
 }
