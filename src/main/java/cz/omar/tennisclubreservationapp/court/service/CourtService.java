@@ -11,12 +11,14 @@ import cz.omar.tennisclubreservationapp.court.storage.CourtRepository;
 import cz.omar.tennisclubreservationapp.surface.business.Surface;
 import cz.omar.tennisclubreservationapp.surface.mappers.SurfaceToDatabaseMapper;
 import cz.omar.tennisclubreservationapp.surface.storage.SurfaceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CourtService {
@@ -25,16 +27,6 @@ public class CourtService {
     private final SurfaceToDatabaseMapper surfaceToDatabaseMapper;
     private final CourtToDtoMapper courtToDtoMapper;
     private final CourtDtoToDatabaseMapper courtDtoToDatabaseMapper;
-
-    public CourtService(CourtRepository courtRepository, SurfaceRepository surfaceRepository,
-                        SurfaceToDatabaseMapper surfaceToDatabaseMapper, CourtToDtoMapper courtToDtoMapper,
-                        CourtDtoToDatabaseMapper courtDtoToDatabaseMapper) {
-        this.courtRepository = courtRepository;
-        this.surfaceRepository = surfaceRepository;
-        this.surfaceToDatabaseMapper = surfaceToDatabaseMapper;
-        this.courtToDtoMapper = courtToDtoMapper;
-        this.courtDtoToDatabaseMapper = courtDtoToDatabaseMapper;
-    }
 
     public CourtDto create(CourtCreateDto courtDto) {
         Surface associatedSurface = surfaceRepository.get(courtDto.getSurfaceId());

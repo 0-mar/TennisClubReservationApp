@@ -16,6 +16,7 @@ import cz.omar.tennisclubreservationapp.reservation.mapper.ReservationDtoToDatab
 import cz.omar.tennisclubreservationapp.reservation.mapper.ReservationToDtoMapper;
 import cz.omar.tennisclubreservationapp.reservation.storage.ReservationEntity;
 import cz.omar.tennisclubreservationapp.reservation.storage.ReservationRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class ReservationService {
@@ -34,19 +36,6 @@ public class ReservationService {
     private final ReservationToDtoMapper reservationToDtoMapper;
     private final CustomerToDatabaseMapper customerToDatabaseMapper;
     private final CourtToDatabaseMapper courtToDatabaseMapper;
-
-    public ReservationService(ReservationRepository reservationRepository, CustomerRepository customerRepository, CourtRepository courtRepository,
-                              ReservationDtoToDatabaseMapper reservationDtoToDatabaseMapper,
-                              CustomerToDatabaseMapper customerToDatabaseMapper, CourtToDatabaseMapper courtToDatabaseMapper,
-                              ReservationToDtoMapper reservationToDtoMapper) {
-        this.reservationRepository = reservationRepository;
-        this.reservationDtoToDatabaseMapper = reservationDtoToDatabaseMapper;
-        this.customerRepository = customerRepository;
-        this.courtRepository = courtRepository;
-        this.customerToDatabaseMapper = customerToDatabaseMapper;
-        this.courtToDatabaseMapper = courtToDatabaseMapper;
-        this.reservationToDtoMapper = reservationToDtoMapper;
-    }
 
     public Customer getAssociatedCustomer(String phoneNumber, String firstName, String lastName) {
         Customer associatedCustomer = customerRepository.getByPhoneNumber(phoneNumber);
