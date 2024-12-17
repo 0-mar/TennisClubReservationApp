@@ -7,6 +7,8 @@ import java.util.List;
 public interface TokenRepository {
     Token create(TokenEntity tokenEntity);
     Token update(Token token);
-    List<Token> getAllValidTokenByUser(Long id);
+    Token delete(Long id);
+    List<Token> getAllTokensByUser(Long id);
     Token getByToken(String token);
+    List<Token> getAllTokensByUser(Long id, TokenType type);
 }
