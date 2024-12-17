@@ -5,6 +5,8 @@ import cz.omar.tennisclubreservationapp.reservation.business.Reservation;
 import cz.omar.tennisclubreservationapp.reservation.mapper.ReservationToDatabaseMapper;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,25 +21,33 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         this.reservationToDatabaseMapper = reservationToDatabaseMapper;
     }
 
-    @Override
-    public Reservation create(ReservationEntity reservationEntity) {
-        if (reservationDao.intervalOverlaps(reservationEntity.getStartTime(), reservationEntity.getEndTime())) {
+    private void checkTimeInterval(LocalDateTime startTime, LocalDateTime endTime) {
+        if (reservationDao.intervalOverlaps(startTime, endTime)) {
             throw new RepositoryException("Time slot already reserved");
         }
 
-        if (reservationEntity.getStartTime().getHour() < 6) {
+        if (startTime.getHour() < 6) {
             throw new RepositoryException("Reservations before 6 are not allowed");
         }
 
-        if (reservationEntity.getEndTime().getHour() == 22 && reservationEntity.getEndTime().getMinute() > 0) {
+        if (endTime.getHour() == 22 && endTime.getMinute() > 0) {
             throw new RepositoryException("Reservations after 22 are not allowed");
         }
 
-        if ((reservationEntity.getStartTime().getYear() != reservationEntity.getEndTime().getYear()) &&
-                (reservationEntity.getStartTime().getDayOfYear() != reservationEntity.getEndTime().getDayOfYear())) {
+        if ((startTime.getYear() != endTime.getYear()) &&
+                (startTime.getDayOfYear() != endTime.getDayOfYear())) {
             throw new RepositoryException("Reservations can be only made within the same day");
         }
 
+        Duration duration = Duration.between(startTime, endTime);
+        if (duration.toMinutes() < 30 || duration.toMinutes() > 240){
+            throw new RepositoryException("One reservation can be minimum 30 mins and maximum 240 mins");
+        }
+    }
+
+    @Override
+    public Reservation create(ReservationEntity reservationEntity) {
+        checkTimeInterval(reservationEntity.getStartTime(), reservationEntity.getEndTime());
         return reservationToDatabaseMapper.entityToReservation(reservationDao.create(reservationEntity));
     }
 
@@ -73,6 +83,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         if (reservationEntity == null) {
             throw new RepositoryException("Reservation " + reservation.getId() + " not found");
         }
+
+        checkTimeInterval(reservation.getStartTime(), reservation.getEndTime());
 
         ReservationEntity updatedEntity = reservationDao.update(reservationToDatabaseMapper.reservationToEntity(reservation));
         return reservationToDatabaseMapper.entityToReservation(updatedEntity);
