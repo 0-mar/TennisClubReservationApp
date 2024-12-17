@@ -87,8 +87,7 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .type(tokenType)
                 .build();
-        var tok = tokenRepository.create(tokenToDatabaseMapper.tokenToEntity(token));
-        System.out.println(tok.getToken());
+        tokenRepository.create(tokenToDatabaseMapper.tokenToEntity(token));
     }
 
     private void revokeAllTokens(User user) {
