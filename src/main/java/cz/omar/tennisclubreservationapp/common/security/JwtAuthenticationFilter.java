@@ -1,5 +1,6 @@
 package cz.omar.tennisclubreservationapp.common.security;
 
+import cz.omar.tennisclubreservationapp.auth.service.JwtService;
 import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.token.storage.TokenRepository;
 import jakarta.servlet.FilterChain;

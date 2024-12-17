@@ -2,6 +2,7 @@ package cz.omar.tennisclubreservationapp.auth;
 
 import cz.omar.tennisclubreservationapp.auth.dto.AuthenticationDto;
 import cz.omar.tennisclubreservationapp.auth.dto.AuthenticationResponseDto;
+import cz.omar.tennisclubreservationapp.auth.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

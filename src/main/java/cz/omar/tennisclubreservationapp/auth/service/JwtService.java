@@ -1,4 +1,4 @@
-package cz.omar.tennisclubreservationapp.common.security;
+package cz.omar.tennisclubreservationapp.auth.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

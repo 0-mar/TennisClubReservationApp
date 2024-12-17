@@ -1,6 +1,6 @@
 package cz.omar.tennisclubreservationapp.common.seeding;
 
-import cz.omar.tennisclubreservationapp.auth.AuthenticationService;
+import cz.omar.tennisclubreservationapp.auth.service.AuthenticationService;
 import cz.omar.tennisclubreservationapp.auth.dto.RegisterDto;
 import cz.omar.tennisclubreservationapp.court.storage.CourtEntity;
 import cz.omar.tennisclubreservationapp.court.storage.CourtRepository;

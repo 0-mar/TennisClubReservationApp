@@ -1,10 +1,9 @@
-package cz.omar.tennisclubreservationapp.auth;
+package cz.omar.tennisclubreservationapp.auth.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.omar.tennisclubreservationapp.auth.dto.AuthenticationDto;
 import cz.omar.tennisclubreservationapp.auth.dto.AuthenticationResponseDto;
 import cz.omar.tennisclubreservationapp.auth.dto.RegisterDto;
-import cz.omar.tennisclubreservationapp.common.security.JwtService;
 import cz.omar.tennisclubreservationapp.token.business.Token;
 import cz.omar.tennisclubreservationapp.token.mapper.TokenToDatabaseMapper;
 import cz.omar.tennisclubreservationapp.token.storage.TokenRepository;
