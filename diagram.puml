@@ -1,0 +1,560 @@
+@startuml
+skinparam componentStyle rectangle
+
+package "common.storage" {
+    abstract class BaseEntity {
+        # Long id
+        # boolean deleted
+        --
+    }
+
+    abstract class AbstractDao<T extends BaseEntity> {
+        # EntityManager entityManager
+        --
+        + T save(T entity)
+        + T findById(Long id)
+        + List<T> findAll()
+        + T remove(Long id)
+        + T merge(T entity)
+    }
+
+}
+
+package "customer" {
+    package "business" {
+        class Customer {
+            + Long id
+            + String firstName
+            + String lastName
+            + String phoneNumber
+        }
+    }
+
+    package "storage" {
+        class CustomerEntity extends common.storage.BaseEntity {
+            - String firstName
+            - String lastName
+            - String phoneNumber
+        }
+
+        interface CustomerDao {
+            + create(CustomerEntity customerEntity): CustomerEntity
+            + get(Long id): CustomerEntity
+            + getAll(): List<CustomerEntity>
+            + delete(Long id): CustomerEntity
+            + getByPhoneNumber(String phoneNumber): CustomerEntity
+        }
+
+        class CustomerDaoImpl extends common.storage.AbstractDao implements CustomerDao {
+
+        }
+
+        interface CustomerRepository {
+            + Customer create(CustomerEntity customerEntity)
+            + Customer get(Long id)
+            + Customer getByPhoneNumber(String phoneNumber);
+        }
+
+        class CustomerRepositoryImpl implements CustomerRepository {
+
+        }
+        CustomerRepositoryImpl o-- CustomerDao : has
+    }
+
+}
+
+package "surface" {
+    package "business" {
+        class Surface {
+            - Long id
+            - String name
+            - float rentPerMinute
+        }
+    }
+
+    package "storage" {
+        class SurfaceEntity extends common.storage.BaseEntity {
+            - String name
+            - float rentPerMinute
+        }
+
+        interface SurfaceDao {
+            + create(SurfaceEntity surfaceEntity): SurfaceEntity
+            + get(Long id): SurfaceEntity
+            + getAll(): List<SurfaceEntity>
+        }
+
+        class SurfaceDaoImpl extends common.storage.AbstractDao implements SurfaceDao {
+
+        }
+
+        interface SurfaceRepository {
+            + create(SurfaceEntity surfaceEntity): Surface
+            + get(Long id): Surface
+            + getAll(): List<Surface>
+        }
+
+        class SurfaceRepositoryImpl implements SurfaceRepository {
+
+        }
+        SurfaceRepositoryImpl o-- SurfaceDao : has
+    }
+}
+
+package "court" {
+    package "business" {
+        class Court {
+            - Long id
+            - String name
+            - Surface surface
+        }
+    }
+
+    package "storage" {
+        class CourtEntity extends common.storage.BaseEntity {
+            - String name
+            - surface.storage.SurfaceEntity surfaceEntity
+        }
+
+        interface CourtDao {
+            + create(CourtEntity courtEntity): CourtEntity
+            + get(Long id): CourtEntity
+            + getAll(): List<CourtEntity>
+            + delete(Long id): CourtEntity
+            + update(CourtEntity courtEntity): CourtEntity
+        }
+
+        class CourtDaoImpl extends common.storage.AbstractDao implements CourtDao {
+
+        }
+
+        interface CourtRepository {
+            + create(CourtEntity court): Court
+            + get(Long id): Court
+            + getAll(): List<Court>
+            + delete(Long id): Court
+            + update(Court court): Court
+        }
+
+        class CourtRepositoryImpl implements CourtRepository {
+
+        }
+
+        CourtRepositoryImpl o-- CourtDao : has
+        CourtEntity o-- surface.storage.SurfaceEntity : has
+        Court o-- surface.business.Surface : has
+    }
+
+    package "dto" {
+        class CourtDto {
+            - Long id
+            - String name
+            - Long surfaceId
+        }
+
+        class CourtCreateDto {
+            - String name
+            - Long surfaceId
+        }
+
+        class CourtUpdateDto {
+            - Long id
+            - String name
+            - Long surfaceId
+        }
+    }
+
+    package "service" {
+        class CourtService {
+                + create(CourtCreateDto courtDto): CourtDto
+                + get(Long id): CourtDto
+                + getAll(): List<CourtDto>
+                + update(CourtUpdateDto courtUpdateDto): CourtDto
+                + delete(Long id): CourtDto
+            }
+
+            CourtService o-- CourtRepository : uses
+            CourtService o-- SurfaceRepository : uses
+    }
+
+    class CourtController {
+            + createCourt(CourtCreateDto courtCreateDto): CourtDto
+            + getCourt(Long courtId): CourtDto
+            + getAllCourts(): List<CourtDto>
+            + updateCourt(Long courtId, CourtUpdateDto courtUpdateDto): CourtDto
+            + deleteCourt(Long courtId): CourtDto
+        }
+
+    CourtController o-- CourtService : uses
+}
+
+package "reservation" {
+    package "business" {
+        class Reservation {
+            - Long id
+            - LocalDateTime startTime
+            - LocalDateTime endTime
+            - boolean doubles
+            - Court court
+            - Customer customer
+        }
+    }
+
+    package "storage" {
+        class ReservationEntity extends common.storage.BaseEntity {
+            - LocalDateTime startTime
+            - LocalDateTime endTime
+            - boolean doubles
+            - CourtEntity courtEntity
+            - CustomerEntity customerEntity
+        }
+
+        interface ReservationDao {
+            + create(ReservationEntity reservationEntity): ReservationEntity
+            + get(Long id): ReservationEntity
+            + getAll(): List<ReservationEntity>
+            + delete(Long id): ReservationEntity
+            + update(ReservationEntity reservationEntity): ReservationEntity
+            + getReservationsByCourt(Long courtId): List<ReservationEntity>
+            + getReservationsByPhoneNumber(String phoneNumber, boolean onlyFuture): List<ReservationEntity>
+            + intervalOverlaps(LocalDateTime startTime, LocalDateTime endTime): boolean
+        }
+
+        class ReservationDaoImpl extends common.storage.AbstractDao implements ReservationDao {
+
+        }
+
+        interface ReservationRepository {
+            + create(ReservationEntity reservationEntity): Reservation
+            + get(Long id): Reservation
+            + getAll(): List<Reservation>
+            + delete(Long id): Reservation
+            + update(Reservation reservation): Reservation
+            + getReservationsByCourt(Long courtId): List<Reservation>
+            + getReservationsByPhoneNumber(String phoneNumber, boolean onlyFuture): List<Reservation>
+        }
+
+        class ReservationRepositoryImpl implements ReservationRepository {
+
+        }
+
+        ReservationRepositoryImpl o-- ReservationDao : uses
+        ReservationEntity o-- CourtEntity : has
+        ReservationEntity o-- CustomerEntity : has
+        Reservation o-- Court : has
+        Reservation o-- Customer : has
+    }
+
+    package "dto" {
+        class ReservationDto {
+            - Long id
+            - LocalDateTime startTime
+            - LocalDateTime endTime
+            - boolean doubles
+            - Long courtId
+            - Long customerId
+        }
+
+        class ReservationCreateDto {
+            - LocalDateTime startTime
+            - LocalDateTime endTime
+            - boolean doubles
+            - Long courtId
+            - String firstName
+            - String lastName
+            - String phoneNumber
+        }
+
+        class ReservationUpdateDto {
+            - Long id
+            - LocalDateTime startTime
+            - LocalDateTime endTime
+            - boolean doubles
+            - Long courtId
+            - Long customerId
+        }
+
+        class ReservationCreatedResultDto {
+            - String phoneNumber
+            - LocalDateTime startTime
+            - LocalDateTime endTime
+            - float price
+        }
+    }
+
+    package "service" {
+        class ReservationService {
+            + create(ReservationCreateDto reservationCreateDto): ReservationCreatedResultDto
+            + get(Long id): ReservationDto
+            + getAll(): List<ReservationDto>
+            + delete(Long id): ReservationDto
+            + update(ReservationUpdateDto reservationUpdateDto): ReservationDto
+            + getReservationsByCourt(Long courtId): List<ReservationDto>
+            + getReservationsByPhoneNumber(String phoneNumber, boolean onlyFuture): List<ReservationDto>
+        }
+
+        ReservationService o-- ReservationRepository : uses
+        ReservationService o-- CustomerRepository : uses
+        ReservationService o-- CourtRepository : uses
+    }
+
+    class ReservationController {
+        + createReservation(ReservationCreateDto reservationCreateDto): ReservationCreatedResultDto
+        + getReservation(Long reservationId): ReservationDto
+        + getReservations(Long courtId, String phoneNumber, Boolean onlyFuture): List<ReservationDto>
+        + updateReservation(Long reservationId, ReservationUpdateDto reservationUpdateDto): ReservationDto
+        + deleteReservation(Long reservationId): ReservationDto
+    }
+
+    ReservationController o-- ReservationService : uses
+}
+
+package "user" {
+    package "business" {
+        class User implements org.springframework.security.core.userdetails.UserDetails {
+            - Long id
+            - String email
+            - String password
+            - Role role
+            --
+            + getAuthorities(): Collection<? extends org.springframework.security.core.GrantedAuthority>
+            + getUsername(): String
+            + getPassword(): String
+            + isAccountNonExpired(): boolean
+            + isAccountNonLocked(): boolean
+            + isCredentialsNonExpired(): boolean
+            + isEnabled(): boolean
+        }
+    }
+
+    package "storage" {
+        class UserEntity extends common.storage.BaseEntity {
+            - String email
+            - String password
+            - Role role
+        }
+
+        enum Role {
+            USER
+            ADMIN
+        }
+
+        interface UserDao {
+            + create(UserEntity userEntity): UserEntity
+            + get(Long id): UserEntity
+            + getAll(): List<UserEntity>
+            + delete(Long id): UserEntity
+            + update(UserEntity userEntity): UserEntity
+            + getByEmail(String email): UserEntity
+        }
+
+        class UserDaoImpl extends common.storage.AbstractDao implements UserDao {
+
+        }
+
+        interface UserRepository {
+            + create(UserEntity userEntity): User
+            + get(Long id): User
+            + getAll(): List<User>
+            + update(User user): User
+            + delete(Long id): User
+            + getByEmail(String email): User
+        }
+
+        class UserRepositoryImpl implements UserRepository {
+
+        }
+
+        UserRepositoryImpl o-- UserDao : uses
+        User o-- Role : has
+        UserEntity o-- Role : has
+    }
+
+    package "dto" {
+        class UserDto {
+            - Long id
+            - String email
+            - Role role
+        }
+
+        class UserCreateDto {
+            - String email
+            - String password
+            - Role role
+        }
+
+        class UserUpdateDto {
+            - Long id
+            - String password
+            - Role role
+        }
+    }
+
+    package "service" {
+        class UserService {
+            + create(UserCreateDto userCreateDto): UserDto
+            + get(Long id): UserDto
+            + getAll(): List<UserDto>
+            + update(UserUpdateDto userUpdateDto): UserDto
+            + delete(Long id): UserDto
+        }
+
+        UserService o-- UserRepository : uses
+
+        UserService o-- org.springframework.security.crypto.password.PasswordEncoder : uses
+    }
+
+    class UserController {
+        + createUser(UserCreateDto userCreateDto): UserDto
+        + getUser(Long userId): UserDto
+        + getAllUsers(): List<UserDto
+        + updateUser(Long userId, UserUpdateDto userUpdateDto): UserDto
+        + deleteUser(Long userId): UserDto
+    }
+
+    UserController o-- UserService : uses
+}
+
+package "token" {
+    package "business" {
+        class Token {
+            - Long id
+            - String token
+            - user.business.User user
+            - TokenType type
+        }
+    }
+
+    package "storage" {
+        class TokenEntity extends common.storage.BaseEntity {
+            - String token
+            - user.storage.UserEntity userEntity
+            - TokenType type
+        }
+
+        enum TokenType {
+            ACCESS
+            REFRESH
+        }
+
+        interface TokenDao {
+            + create(TokenEntity entity): TokenEntity
+            + update(TokenEntity entity): TokenEntity
+            + delete(Long id): TokenEntity
+            + getAllTokensByUser(Long id): List<TokenEntity>
+            + getByToken(String token): TokenEntity
+            + getAllTokensByUser(Long id, TokenType type): List<TokenEntity>
+        }
+
+        class TokenDaoImpl extends common.storage.AbstractDao implements TokenDao {
+
+        }
+
+        interface TokenRepository {
+            + create(TokenEntity tokenEntity): Token
+            + update(Token token): Token
+            + delete(Long id): Token
+            + getAllTokensByUser(Long id): List<Token>
+            + getByToken(String token): Token
+            + getAllTokensByUser(Long id, TokenType type): List<Token>
+        }
+
+        class TokenRepositoryImpl implements TokenRepository {
+
+        }
+
+        TokenRepositoryImpl o-- TokenDao : uses
+        TokenEntity o-- user.storage.UserEntity : has
+        Token o-- user.business.User : has
+        Token o-- TokenType : has
+        TokenEntity o-- TokenType : has
+    }
+}
+
+package "auth" {
+    package "dto" {
+        class AuthenticationDto {
+            - String email
+            - String password
+        }
+
+        class AuthenticationResponseDto {
+            - String accessToken
+            - String refreshToken
+        }
+
+        class RegisterDto {
+            - String email
+            - String password
+            - Role role
+        }
+    }
+
+    package "service" {
+        class AuthenticationService {
+            + register(RegisterDto registerData): AuthenticationResponseDto
+            + authenticate(AuthenticationDto requestBody): AuthenticationResponseDto
+            + refreshToken(HttpServletRequest request, HttpServletResponse response): void
+            + logout(HttpServletRequest request, HttpServletResponse response): void
+
+            # saveUserToken(User user, String jwtToken, TokenType tokenType): void
+            # revokeAllTokens(User user): void
+            # revokeAccessTokens(User user): void
+        }
+
+        class JwtService {
+            + extractUsername(String token): String
+            + isTokenValid(String token, UserDetails userDetails): boolean
+            + generateToken(UserDetails userDetails): String
+            + generateToken(Map<String, Object> extraClaims, UserDetails userDetails): String
+            + generateRefreshToken(UserDetails userDetails): String
+
+            # extractClaim(String token, Function<Claims, T> claimsResolver): <T>
+            # extractAllClaims(String token): Claims
+            # buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration): String
+            # isTokenExpired(String token): boolean
+            # getSignInKey(): Key
+        }
+
+        JwtService o-- UserDetails : uses
+        AuthenticationService o-- JwtService : uses
+        AuthenticationService o-- UserRepository : uses
+        AuthenticationService o-- TokenRepository : uses
+    }
+
+    class AuthenticationController {
+        + authenticate(AuthenticationDto requestBody): ResponseEntity<AuthenticationResponseDto>
+        + refreshToken(HttpServletRequest request, HttpServletResponse response): void
+        + logout(HttpServletRequest request, HttpServletResponse response): void
+    }
+
+    AuthenticationController o-- AuthenticationService : uses
+}
+
+package "common.security" {
+    class JwtAuthenticationFilter extends org.springframework.web.filter.OncePerRequestFilter {
+        - JwtService jwtService
+        - TokenRepository tokenRepository
+        - UserDetailsService userDetailsService
+
+        + doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain): void
+    }
+
+    class SecurityConfiguration {
+        - JwtAuthenticationFilter jwtAuthenticationFilter
+        - AuthenticationProvider authenticationProvider
+
+        + securityFilterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http): org.springframework.security.web.SecurityFilterChain
+    }
+
+    JwtAuthenticationFilter o-- JwtService : uses
+    JwtAuthenticationFilter o-- TokenRepository : uses
+    JwtAuthenticationFilter o-- UserDetailsService : uses
+    SecurityConfiguration o-- JwtAuthenticationFilter : uses
+    SecurityConfiguration o-- AuthenticationProvider : uses
+}
+
+
+UserService o-- token.storage.TokenRepository : uses
+
+@enduml
