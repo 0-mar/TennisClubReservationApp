@@ -168,8 +168,8 @@ public class ReservationDaoTests {
     }
 
     private List<CustomerEntity> initCustomerData() {
-        var saved1 = entityManager.persist(new CustomerEntity("John", "Doe", "+420789456123", false));
-        var saved2 = entityManager.persist(new CustomerEntity("Pepa", "Vomacka", "+49666833945", false));
+        var saved1 = entityManager.persist(new CustomerEntity("John", "Doe", "+420789456123"));
+        var saved2 = entityManager.persist(new CustomerEntity("Pepa", "Vomacka", "+49666833945"));
 
         return List.of(saved1, saved2);
     }
