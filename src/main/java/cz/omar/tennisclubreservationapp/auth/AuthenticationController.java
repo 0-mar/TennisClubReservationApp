@@ -2,7 +2,6 @@ package cz.omar.tennisclubreservationapp.auth;
 
 import cz.omar.tennisclubreservationapp.auth.dto.AuthenticationDto;
 import cz.omar.tennisclubreservationapp.auth.dto.AuthenticationResponseDto;
-import cz.omar.tennisclubreservationapp.auth.dto.RegisterDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +20,6 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    /*@PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDto> register(
-            @RequestBody RegisterDto registerData
-    ) {
-        return ResponseEntity.ok(authenticationService.register(registerData));
-    }*/
-
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDto> authenticate(
             @RequestBody AuthenticationDto requestBody
@@ -41,5 +33,13 @@ public class AuthenticationController {
             HttpServletResponse response
     ) throws IOException {
         authenticationService.refreshToken(request, response);
+    }
+
+    @PostMapping("/logout")
+    public void logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        authenticationService.logout(request, response);
     }
 }
