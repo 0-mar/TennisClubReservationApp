@@ -16,5 +16,6 @@ public interface CourtToDatabaseMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "surface", target = "surfaceEntity")
+    @Mapping(constant = "false", target = "deleted")
     CourtEntity courtToEntity(Court court);
 }

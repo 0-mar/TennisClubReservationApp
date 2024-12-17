@@ -15,5 +15,6 @@ public interface SurfaceToDatabaseMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "rentPerMinute", target = "rentPerMinute")
+    @Mapping(constant = "false", target = "deleted")
     SurfaceEntity surfaceToEntity(Surface surface);
 }
