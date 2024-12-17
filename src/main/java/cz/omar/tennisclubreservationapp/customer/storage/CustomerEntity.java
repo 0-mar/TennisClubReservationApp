@@ -22,7 +22,4 @@ public class CustomerEntity extends BaseEntity {
 
     @Column(name = "phoneNumber", unique = true, nullable = false)
     private String phoneNumber;
-
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
 }
