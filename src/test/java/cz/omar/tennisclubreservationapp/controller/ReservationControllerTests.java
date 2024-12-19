@@ -1,6 +1,8 @@
 package cz.omar.tennisclubreservationapp.controller;
 
-import cz.omar.tennisclubreservationapp.common.config.AppConfig;
+import cz.omar.tennisclubreservationapp.auth.dto.RegisterDto;
+import cz.omar.tennisclubreservationapp.auth.service.AuthenticationService;
+import cz.omar.tennisclubreservationapp.common.storage.RepositoryException;
 import cz.omar.tennisclubreservationapp.court.business.Court;
 import cz.omar.tennisclubreservationapp.customer.business.Customer;
 import cz.omar.tennisclubreservationapp.reservation.business.Reservation;
@@ -10,25 +12,24 @@ import cz.omar.tennisclubreservationapp.reservation.dto.ReservationDto;
 import cz.omar.tennisclubreservationapp.reservation.dto.ReservationUpdateDto;
 import cz.omar.tennisclubreservationapp.reservation.service.ReservationService;
 import cz.omar.tennisclubreservationapp.surface.business.Surface;
-import cz.omar.tennisclubreservationapp.user.storage.UserDaoImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
+import static cz.omar.tennisclubreservationapp.user.storage.Role.ADMIN;
+import static cz.omar.tennisclubreservationapp.user.storage.Role.USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -36,11 +37,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(properties = "seed-data=false")
-@ContextConfiguration(classes = {AppConfig.class})
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ReservationControllerTests {
-    /*@Autowired
+    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private AuthenticationService service;
 
     @MockBean
     private ReservationService reservationService;
@@ -49,6 +54,30 @@ public class ReservationControllerTests {
     Customer customer;
     Court court;
     Reservation reservation;
+
+    String adminAccessToken;
+    String userAccessToken;
+
+    @BeforeAll
+    void setUpAll() throws Exception {
+        var admin = RegisterDto.builder()
+                .email("admin@mail.com")
+                .password("password")
+                .role(ADMIN)
+                .build();
+
+        var user = RegisterDto.builder()
+                .email("user@mail.com")
+                .password("password")
+                .role(USER)
+                .build();
+
+        var adminData = service.register(admin);
+        var userData = service.register(user);
+
+        adminAccessToken = adminData.getAccessToken();
+        userAccessToken = userData.getAccessToken();
+    }
 
     @BeforeEach
     void setUp() {
@@ -97,17 +126,63 @@ public class ReservationControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "startTime": "2023-10-20T10:00:00",
-                                    "endTime": "2023-10-20T11:00:00",
+                                    "startTime": "2023-10-20T10:00",
+                                    "endTime": "2023-10-20T11:00",
                                     "doubles": false,
                                     "courtId": 1,
                                     "firstName": "John",
                                     "lastName": "Doe",
                                     "phoneNumber": "123456789"
                                 }
-                                """))
+                                """).header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.phoneNumber").value(customer.getPhoneNumber()));
+                .andExpect(jsonPath("$.phoneNumber").value(resultDto.getPhoneNumber()))
+                .andExpect(jsonPath("$.startTime").value(resultDto.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
+                .andExpect(jsonPath("$.endTime").value(resultDto.getEndTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
+                .andExpect(jsonPath("$.price").value(resultDto.getPrice()));
+    }
+
+    @Test
+    void createInvalidReservationTest() throws Exception {
+        Mockito.when(reservationService.create(any(ReservationCreateDto.class))).thenThrow(new RepositoryException("Time slot already reserved"));
+
+        mockMvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "startTime": "2023-10-20T10:00",
+                                    "endTime": "2023-10-20T11:00",
+                                    "doubles": false,
+                                    "courtId": 1,
+                                    "firstName": "John",
+                                    "lastName": "Doe",
+                                    "phoneNumber": "123456789"
+                                }
+                                """).header("Authorization", "Bearer " + adminAccessToken))
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    void createReservationAsUserTest() throws Exception {
+        ReservationCreatedResultDto resultDto = new ReservationCreatedResultDto(customer.getPhoneNumber(),
+                reservation.getStartTime(), reservation.getEndTime(), 600);
+
+        Mockito.when(reservationService.create(any(ReservationCreateDto.class))).thenReturn(resultDto);
+
+        mockMvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "startTime": "2023-10-20T10:00",
+                                    "endTime": "2023-10-20T11:00",
+                                    "doubles": false,
+                                    "courtId": 1,
+                                    "firstName": "John",
+                                    "lastName": "Doe",
+                                    "phoneNumber": "123456789"
+                                }
+                                """).header("Authorization", "Bearer " + userAccessToken))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -121,9 +196,11 @@ public class ReservationControllerTests {
 
         Mockito.when(reservationService.get(1L)).thenReturn(reservationDto);
 
-        mockMvc.perform(get("/api/reservations/1"))
+        mockMvc.perform(get("/api/reservations/1").header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.startTime").value(reservationDto.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
+                .andExpect(jsonPath("$.endTime").value(reservationDto.getEndTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))))
                 .andExpect(jsonPath("$.courtId").value(1))
                 .andExpect(jsonPath("$.customerId").value(2));
     }
@@ -132,17 +209,23 @@ public class ReservationControllerTests {
     void getAllReservationsTest() throws Exception {
         ReservationDto reservation1 = new ReservationDto();
         reservation1.setId(1L);
+        reservation1.setStartTime(LocalDateTime.of(2023, 10, 20, 10, 0));
+        reservation1.setEndTime(LocalDateTime.of(2023, 10, 20, 11, 0));
         reservation1.setCourtId(1L);
+        reservation1.setCustomerId(2L);
 
         ReservationDto reservation2 = new ReservationDto();
         reservation2.setId(2L);
-        reservation2.setCourtId(2L);
+        reservation2.setStartTime(LocalDateTime.of(2023, 10, 20, 12, 0));
+        reservation2.setEndTime(LocalDateTime.of(2023, 10, 20, 14, 0));
+        reservation2.setCourtId(1L);
+        reservation2.setCustomerId(2L);
 
         List<ReservationDto> reservations = Arrays.asList(reservation1, reservation2);
 
         Mockito.when(reservationService.getAll()).thenReturn(reservations);
 
-        mockMvc.perform(get("/api/reservations"))
+        mockMvc.perform(get("/api/reservations").header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -157,7 +240,7 @@ public class ReservationControllerTests {
 
         Mockito.when(reservationService.getReservationsByCourt(1L)).thenReturn(List.of(reservation));
 
-        mockMvc.perform(get("/api/reservations?courtId=1"))
+        mockMvc.perform(get("/api/reservations?courtId=1").header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].courtId").value(1));
@@ -173,7 +256,7 @@ public class ReservationControllerTests {
         Mockito.when(reservationService.getReservationsByPhoneNumber("123456789", true))
                 .thenReturn(List.of(reservation));
 
-        mockMvc.perform(get("/api/reservations?phoneNumber=123456789&onlyFuture=true"))
+        mockMvc.perform(get("/api/reservations?phoneNumber=123456789&onlyFuture=true").header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].customerId").value(2))
@@ -192,11 +275,11 @@ public class ReservationControllerTests {
 
         ReservationDto updatedReservation = new ReservationDto();
         updatedReservation.setId(1L);
-        updatedReservation.setStartTime(reservationUpdateDto.getStartTime());
-        updatedReservation.setEndTime(reservationUpdateDto.getEndTime());
-        updatedReservation.setDoubles(false);
-        updatedReservation.setCourtId(1L);
-        updatedReservation.setCustomerId(2L);
+        updatedReservation.setStartTime(LocalDateTime.of(2023, 10, 21, 10, 0));
+        updatedReservation.setEndTime(LocalDateTime.of(2023, 10, 21, 10, 0));
+        updatedReservation.setDoubles(true);
+        updatedReservation.setCourtId(2L);
+        updatedReservation.setCustomerId(3L);
 
         Mockito.when(reservationService.update(any(ReservationUpdateDto.class))).thenReturn(updatedReservation);
 
@@ -204,18 +287,19 @@ public class ReservationControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "startTime": "2023-10-20T10:00:00",
-                                    "endTime": "2023-10-20T11:00:00",
-                                    "doubles": false,
-                                    "courtId": 1,
-                                    "customerId": 2
+                                    "id": 1,
+                                    "startTime": "2023-10-21T10:00:00",
+                                    "endTime": "2023-10-21T11:00:00",
+                                    "doubles": true,
+                                    "courtId": 2,
+                                    "customerId": 3
                                 }
-                                """))
+                                """).header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.doubles").value(false))
-                .andExpect(jsonPath("$.courtId").value(1))
-                .andExpect(jsonPath("$.customerId").value(2));
+                .andExpect(jsonPath("$.doubles").value(true))
+                .andExpect(jsonPath("$.courtId").value(2))
+                .andExpect(jsonPath("$.customerId").value(3));
     }
 
     @Test
@@ -225,8 +309,8 @@ public class ReservationControllerTests {
 
         Mockito.when(reservationService.delete(1L)).thenReturn(reservationDto);
 
-        mockMvc.perform(delete("/api/reservations/1"))
+        mockMvc.perform(delete("/api/reservations/1").header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
-    }*/
+    }
 }
