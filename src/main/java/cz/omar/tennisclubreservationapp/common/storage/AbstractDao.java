@@ -7,6 +7,13 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * AbstractDao is a generic base data access object class providing basic CRUD operations
+ * for entities that extend the BaseEntity class. These operations include saving,
+ * finding by ID, fetching all entities, logical removal, and merging entities.
+ *
+ * @param <T> the type of entity extending BaseEntity that this DAO handles
+ */
 public class AbstractDao<T extends BaseEntity> {
     @PersistenceContext
     protected EntityManager entityManager;

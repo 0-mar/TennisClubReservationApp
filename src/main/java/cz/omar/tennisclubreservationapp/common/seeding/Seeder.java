@@ -21,6 +21,12 @@ import java.util.List;
 import static cz.omar.tennisclubreservationapp.user.storage.Role.ADMIN;
 import static cz.omar.tennisclubreservationapp.user.storage.Role.USER;
 
+/**
+ * The Seeder class is responsible for initializing and seeding the database with default data.
+ * This includes creating surface entities, court entities, and default users.
+ * The class is configured to run the seeding process automatically when the application starts,
+ * if the seeding feature is enabled via configuration.
+ */
 @RequiredArgsConstructor
 @Component
 public class Seeder {

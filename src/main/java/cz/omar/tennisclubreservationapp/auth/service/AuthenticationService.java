@@ -25,6 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
+/**
+ * Service responsible for handling authentication and user session management.
+ * It provides functionality for user registration, authentication, token-based
+ * authorization, refreshing access tokens, and logging out users.
+ * The service uses JWT for token generation and validation.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor

@@ -21,6 +21,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         this.reservationToDatabaseMapper = reservationToDatabaseMapper;
     }
 
+
+    /**
+     * Validates the time interval for a reservation. Ensures that the specified time interval adheres
+     * to predefined business rules, including no overlaps with existing reservations, time restrictions,
+     * and duration constraints. If any rule is violated, a {@link RepositoryException} is thrown.
+     *
+     * @param startTime the start time of the reservation
+     * @param endTime   the end time of the reservation
+     * @throws RepositoryException if the reservation time interval violates any constraints
+     */
     private void checkTimeInterval(LocalDateTime startTime, LocalDateTime endTime) {
         if (reservationDao.intervalOverlaps(startTime, endTime)) {
             throw new RepositoryException("Time slot already reserved");

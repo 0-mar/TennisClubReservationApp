@@ -37,6 +37,15 @@ public class ReservationService {
     private final CustomerToDatabaseMapper customerToDatabaseMapper;
     private final CourtToDatabaseMapper courtToDatabaseMapper;
 
+    /**
+     * Retrieves an associated customer by phone number. If the customer does not exist,
+     * a new customer is created with the provided phone number, first name, and last name.
+     *
+     * @param phoneNumber the phone number of the customer to retrieve or create
+     * @param firstName the first name of the customer (used if creating a new customer)
+     * @param lastName the last name of the customer (used if creating a new customer)
+     * @return the associated customer, either retrieved from the database or newly created
+     */
     public Customer getAssociatedCustomer(String phoneNumber, String firstName, String lastName) {
         Customer associatedCustomer = customerRepository.getByPhoneNumber(phoneNumber);
         if (associatedCustomer == null) {
